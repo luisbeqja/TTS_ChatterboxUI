@@ -12,12 +12,7 @@ A modern Flask web interface for text-to-speech (TTS) generation using Chatterbo
 - (Recommended) Virtual environment (venv, conda, etc.)
 
 ## Installation
-1. **Clone the repository** (if not already):
-   ```bash
-   git clone <repo-url>
-   cd TTS_Tests
-   ```
-2. **Install dependencies:**
+**Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
@@ -25,7 +20,7 @@ A modern Flask web interface for text-to-speech (TTS) generation using Chatterbo
 ## Running the Application
 1. **Start the Flask app:**
    ```bash
-   python app.py
+   python run.py
    ```
 2. **Access the web interface:**
    Open your browser and go to: [http://localhost:5000](http://localhost:5000)

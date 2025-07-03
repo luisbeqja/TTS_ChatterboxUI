@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, request, jsonify, send_file, url_for
-from config import Config
-from utils import validate_filename, handle_error
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config.config import Config
+from src.utils import validate_filename, handle_error
 
 
 def create_routes(tts_service):

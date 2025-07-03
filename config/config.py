@@ -8,6 +8,10 @@ class Config:
     HOST = '0.0.0.0'
     PORT = 5000
     
+    # Model loading settings
+    LAZY_LOAD_MODEL = False  # Set to True for faster startup, False for faster first request
+    USE_RELOADER = False     # Set to True for development auto-reload, False to keep model in memory
+    
     # TTS settings
     MAX_TEXT_LENGTH = 1000
     MAX_HISTORY_ITEMS = 20

@@ -6,10 +6,10 @@ This is the main application entry point that initializes all components.
 """
 
 from flask import Flask
-from config import Config
-from services.tts_service import TTSService
-from routes import create_routes
-from utils import cleanup_temp_files
+from config.config import Config
+from src.services.tts_service import TTSService
+from src.routes import create_routes
+from src.utils import cleanup_temp_files
 import atexit
 
 
@@ -20,7 +20,7 @@ def create_app():
     Returns:
         Flask: Configured Flask application instance
     """
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder='src/templates')
     
     # Configure Flask app
     app.config.from_object(Config)
@@ -73,8 +73,9 @@ def main():
         # Initialize cleanup
         initialize_services()
         
-        # Create TTS service with lazy loading (model loads on first request)
-        tts_service = TTSService(lazy_load=True)
+        # Create TTS service with immediate loading for faster first request
+        # Set lazy_load=True if you prefer faster startup but slower first request
+        tts_service = TTSService(lazy_load=Config.LAZY_LOAD_MODEL)
         
         # Register routes
         register_routes(app, tts_service)
@@ -89,7 +90,10 @@ def main():
         print(f"Debug mode: {Config.DEBUG}")
         print(f"Max text length: {Config.MAX_TEXT_LENGTH} characters")
         print(f"Output directory: {Config.OUTPUT_DIR}/")
-        print("Model will load on first request...")
+        if tts_service._model_loaded:
+            print("Model loaded and ready!")
+        else:
+            print("Model will load on first request...")
         print(f"{'='*50}\n")
         
         # Run the application
@@ -98,7 +102,7 @@ def main():
             host=Config.HOST,
             port=Config.PORT,
             threaded=True,  # Enable threading for better performance
-            use_reloader=True  # Keep auto-reload for development
+            use_reloader=Config.USE_RELOADER  # Configurable auto-reload
         )
         
     except KeyboardInterrupt:

@@ -1,4 +1,50 @@
-/outputs
-/cache
-/tmp
-/logs
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Generated audio files
+outputs/
+cache/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Deployment files
+deployment/ssl/
+deployment/logs/
+deployment/.env
+
+# Model cache and downloads
+.cache/
+huggingface/
+torch/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Logs
+*.log
+logs/

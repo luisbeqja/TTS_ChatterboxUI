@@ -3,9 +3,13 @@ import torchaudio as ta
 import time
 import uuid
 import os
+import sys
 from datetime import datetime
 from chatterbox.tts import ChatterboxTTS
-from config import Config, DeviceConfig
+
+# Add parent directories to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from config.config import Config, DeviceConfig
 
 
 class TTSService:
