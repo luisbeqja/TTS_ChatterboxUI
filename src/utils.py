@@ -1,11 +1,13 @@
 import os
 import re
 import sys
+import uuid
+from datetime import datetime
 from flask import jsonify
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.config import Config
+from src.config.config import Config
 
 
 def validate_filename(filename):
@@ -174,4 +176,189 @@ def validate_text_input(text):
     if len(text.strip()) < 1:
         return False, "Text is too short"
     
-    return True, None 
+    return True, None
+
+
+def split_text_into_chunks(text, max_chunk_size=200):
+    """
+    Split text into logical chunks for streaming TTS.
+    
+    Args:
+        text (str): Input text to split
+        max_chunk_size (int): Maximum characters per chunk
+        
+    Returns:
+        List[str]: List of text chunks
+    """
+    if not text or not text.strip():
+        return []
+    
+    # Clean up text
+    text = text.strip()
+    
+    # First, try to split by sentences
+    sentences = re.split(r'([.!?]+)', text)
+    chunks = []
+    current_chunk = ""
+    
+    i = 0
+    while i < len(sentences):
+        sentence = sentences[i].strip()
+        
+        # Skip empty sentences
+        if not sentence:
+            i += 1
+            continue
+            
+        # Add punctuation back if it exists
+        if i + 1 < len(sentences) and sentences[i + 1].strip() in ['.', '!', '?', '...']:
+            sentence += sentences[i + 1].strip()
+            i += 1
+        
+        # Check if adding this sentence would exceed max_chunk_size
+        if len(current_chunk) + len(sentence) > max_chunk_size:
+            # If current chunk is not empty, save it
+            if current_chunk.strip():
+                chunks.append(current_chunk.strip())
+                current_chunk = ""
+            
+            # If sentence itself is too long, split it by commas or phrases
+            if len(sentence) > max_chunk_size:
+                sub_chunks = split_long_sentence(sentence, max_chunk_size)
+                chunks.extend(sub_chunks)
+            else:
+                current_chunk = sentence
+        else:
+            current_chunk += " " + sentence if current_chunk else sentence
+        
+        i += 1
+    
+    # Add remaining chunk
+    if current_chunk.strip():
+        chunks.append(current_chunk.strip())
+    
+    # Remove empty chunks and return
+    return [chunk for chunk in chunks if chunk.strip()]
+
+
+def split_long_sentence(sentence, max_size=200):
+    """
+    Split a long sentence into smaller chunks based on commas and phrases.
+    
+    Args:
+        sentence (str): Long sentence to split
+        max_size (int): Maximum characters per chunk
+        
+    Returns:
+        List[str]: List of sentence chunks
+    """
+    if len(sentence) <= max_size:
+        return [sentence]
+    
+    # Try splitting by commas first
+    parts = re.split(r'([,;:])', sentence)
+    chunks = []
+    current_chunk = ""
+    
+    i = 0
+    while i < len(parts):
+        part = parts[i].strip()
+        
+        if not part:
+            i += 1
+            continue
+        
+        # Add punctuation back if it exists
+        if i + 1 < len(parts) and parts[i + 1].strip() in [',', ';', ':']:
+            part += parts[i + 1].strip()
+            i += 1
+        
+        if len(current_chunk) + len(part) > max_size:
+            if current_chunk.strip():
+                chunks.append(current_chunk.strip())
+                current_chunk = ""
+            
+            # If part is still too long, split by words
+            if len(part) > max_size:
+                word_chunks = split_by_words(part, max_size)
+                chunks.extend(word_chunks)
+            else:
+                current_chunk = part
+        else:
+            current_chunk += " " + part if current_chunk else part
+        
+        i += 1
+    
+    if current_chunk.strip():
+        chunks.append(current_chunk.strip())
+    
+    return [chunk for chunk in chunks if chunk.strip()]
+
+
+def split_by_words(text, max_size=200):
+    """
+    Split text by words as last resort.
+    
+    Args:
+        text (str): Text to split
+        max_size (int): Maximum characters per chunk
+        
+    Returns:
+        List[str]: List of word chunks
+    """
+    words = text.split()
+    chunks = []
+    current_chunk = ""
+    
+    for word in words:
+        if len(current_chunk) + len(word) + 1 > max_size:
+            if current_chunk.strip():
+                chunks.append(current_chunk.strip())
+                current_chunk = ""
+        
+        current_chunk += " " + word if current_chunk else word
+    
+    if current_chunk.strip():
+        chunks.append(current_chunk.strip())
+    
+    return [chunk for chunk in chunks if chunk.strip()]
+
+
+def estimate_audio_duration(text, words_per_minute=150):
+    """
+    Estimate audio duration based on text length.
+    
+    Args:
+        text (str): Text to estimate duration for
+        words_per_minute (int): Average speaking rate
+        
+    Returns:
+        float: Estimated duration in seconds
+    """
+    word_count = len(text.split())
+    return (word_count / words_per_minute) * 60
+
+
+def generate_stream_id():
+    """Generate a unique stream ID for tracking streaming sessions."""
+    return str(uuid.uuid4())
+
+
+def validate_stream_chunk(chunk_text, max_length=300):
+    """
+    Validate a text chunk for streaming TTS.
+    
+    Args:
+        chunk_text (str): Text chunk to validate
+        max_length (int): Maximum allowed length
+        
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    if not chunk_text or not chunk_text.strip():
+        return False
+    
+    if len(chunk_text) > max_length:
+        return False
+    
+    return True 

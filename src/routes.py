@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, send_file, url_f
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.config import Config
+from src.config.config import Config
 from src.utils import validate_filename, handle_error
 
 

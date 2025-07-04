@@ -24,6 +24,18 @@ class Config:
     # TTS generation parameters
     DEFAULT_CFG_WEIGHT = 0.3  # Lower CFG weight for faster generation
     DEFAULT_EXAGGERATION = 0.5  # Balanced exaggeration
+    
+    # Streaming TTS settings
+    STREAMING_ENABLED = True
+    STREAMING_CHUNK_SIZE = 200  # Maximum characters per chunk
+    STREAMING_MIN_CHUNK_SIZE = 50  # Minimum characters per chunk
+    STREAMING_MAX_CONCURRENT_CHUNKS = 3  # Maximum chunks to process concurrently
+    STREAMING_PRELOAD_CHUNKS = 2  # Number of chunks to preload
+    STREAMING_TIMEOUT = 30  # Timeout for streaming sessions in seconds
+    
+    # Audio streaming settings
+    AUDIO_CHUNK_BUFFER_SIZE = 1024 * 16  # Buffer size for audio streaming
+    AUDIO_OVERLAP_MS = 50  # Overlap between audio chunks in milliseconds
 
 
 class DeviceConfig:

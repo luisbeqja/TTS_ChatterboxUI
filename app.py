@@ -6,7 +6,7 @@ This is the main application entry point that initializes all components.
 """
 
 from flask import Flask
-from config.config import Config
+from src.config.config import Config
 from src.services.tts_service import TTSService
 from src.routes import create_routes
 from src.utils import cleanup_temp_files
