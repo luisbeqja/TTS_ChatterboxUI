@@ -1,13 +1,11 @@
 import os
 import re
-import sys
 import uuid
 from datetime import datetime
 from flask import jsonify
 
-# Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.config.config import Config
+# Import configuration using relative imports
+from .config.config import Config
 
 
 def validate_filename(filename):

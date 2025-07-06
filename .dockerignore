@@ -1,0 +1,65 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker (exclude from root, but allow docker/ directory contents)
+docker/Dockerfile
+docker/docker-compose.yml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache and temporary files
+cache/
+*.tmp
+*.log
+
+# Large model files (will be downloaded in container)
+models/
+*.bin
+*.safetensors
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Documentation
+*.md
+docs/
+
+# Tests
+tests/
+test_*
+*_test.py
+
+# Development files
+.pytest_cache/
+.coverage
+.nyc_output
+coverage.xml
+
+# Node modules (if any)
+node_modules/ 
